@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"benettlee.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这里有东西被加密了，需要输入密码查看哦。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建本地blast网页--sequenceserver">
+<meta property="og:url" content="https://benettlee.github.io/2021/05/16/ZFIfeBC5hJJfCyuj/index.html">
+<meta property="og:site_name" content="BenettLee Blog">
+<meta property="og:description" content="这里有东西被加密了，需要输入密码查看哦。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-16T06:48:14.000Z">
+<meta property="article:modified_time" content="2020-02-13T06:46:01.000Z">
+<meta property="article:author" content="李鹏程">
+<meta property="article:tag" content="blast">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://benettlee.github.io/2021/05/16/ZFIfeBC5hJJfCyuj/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>搭建本地blast网页--sequenceserver | BenettLee Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="BenettLee Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">BenettLee Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://benettlee.github.io/2021/05/16/ZFIfeBC5hJJfCyuj/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="李鹏程">
+      <meta itemprop="description" content="一定要做最适合自己的事情，不要迎合别人的口味而去做一件不属于自我的“难事”。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BenettLee Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          搭建本地blast网页--sequenceserver
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-16 06:48:14" itemprop="dateCreated datePublished" datetime="2021-05-16T06:48:14Z">2021-05-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-13 06:46:01" itemprop="dateModified" datetime="2020-02-13T06:46:01Z">2020-02-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/bioinfo/" itemprop="url" rel="index"><span itemprop="name">bioinfo</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="8589524f0e3bc02167dca3af4d60db7184f89b243146d3a468132f12f430cdac">dfd3ce76be6809cde5ab17ca6dbaa7e4a1ef828341bd1f006e62510ca2d5a3bb9c433ba6128ff5738f5e927b42b6fe8db632a31589912cb5c1053351ee7d8d410cfba045b5acf948982b8ea730e7429678511f07dd1801d3f329cba24cfd0274e97a3e2d5023415a2704db6c51fb1c787750eb7c7bfff335464b2e8e44aa1e493e50d7da97df2d4d76bebb9b1d45c936bae92ae3a12e1e03840cbec963d43a1eb564ea214d673a159b60ff9acebbfeefabae1511caa12be74e68113cc5971d7ee3ca0b17f4665f558242239e316c09606c362f7bbf6d8492a2f71f81a48d32eec95488cc820f3c1d0f52786652cd4797a0b969ffaaa0c30f7d61770553c60904fdc56cac5f145babe4c70a8d6a4dc45dbd3aecb7cbc205ce03e8bcb74fa8aa5f35daf90a8349d6927d0b721aa0387f4e04132a435ccead741ce702bdd0c941f63bb8f0c92b7113ded7978c816040c1f862868403a57684d68d8134180d20576d456eae066fa8851cac72f56ba5f9c433105db0c20451f7d364bd7b4fd4dc7599d21e7cf3db189b3e11b3abe81fe157517a030ff11a6ef5c8342e57a1300889469638c2e5963871bd5f717821fc1d19f66096882059d459b3894bfd3183fc16eec1c363512e3a135760c20cd24acc0dbc442d4fef2b979afd8fffb9f4ae81febd2978b8bd600453886a1ba0cb63045b1db6cec6377fa17485afd0b1423a0a37c40e847e14752ffc8fd27adbfb9af73ebeb103a24cfc7e2b92963d5bbabf0bfb84a06dcb596c09972542b98f6fb25f9dd8d04c6ce26785bdccfa31218e29f7866f0ac80bfe70d7d724abfa044e88c543c00b1a6c36f0ce17baaa8350592e871bee40a71a668f0e5e60202857b72a39fdbabe2092e43d4e4606bf617b9163af2e778d563554c77ec66a31eed2f284f656b51a4db989d816b0f51ba2bd3d40679944ccb93916bba5960219e5389b5d72fb915286d36c67ddb262f086e6f2624dbfd4a94bb36f00eb012f7bcf4ce055ca67346c3432f23d1364bd0e02910337a4402625590d5e84421158c1d67f8d7f378edc3cebe35dde46855b83a86970cf11994b1630c7f1dceb8dd4c15c9b1878f50c6e2044d74a2f1d94ba0e4aba22f8b3335607b848f4996d9d4765812518508241ebc179f6543b4b79794e08a4c146133dabe1edc747e247739b415ad799e584afcb07b493f90cc2b26693dabf7040df0bcdee43b463d5c00e2e33d0268503a030cd5e786e9c159b587948356af6e97e156e6992dd87ae44fb7b580512255a6cac0fe8adec86079bc7b1f5917be5d3c9093e7d1b56c15a24fc6b96f89d18a978835ff70a8d7dd6044cb5ec545d0db23f667cca7020f4ef672dd308a75adf0214d854fd5eb5fdfc07010096c1200e5148968aa676a0f5c409d74737f332a08836190c13d25fe7f82da8df04b2738164cafcd0f129b9fd8596c4dfd249d963b8d1584ad67a2afd88df0ac769b11cad7c243edbcc982c2f9e246d216bb42e3d2fd8998578d54ea28519b31a72fafb62db1a80865fcb7f91c343eddc98c33a12ed0007c5415bb680ba9bfe96723377d00a1f31f337bcea7de8f76c397b6f11987a11cf3973108a9296fd5ae2049cff05a063652eaf14497af60b5abec699da0b098423cc6c8e69def3ab31ee2a840b69422cd42bf160413b1a27a92a7229ad1f224fdee9e83d383c8b91d13f5ad702cbcd9c691a18a3a1e5b0b3fe427d066b303bbbe432a1a550caec4f8416f4ba4c05c1d863bd9e95878460701a2b8ecd5345f78f7e53b47323960adafea9851fab641301d136759f3bb267ef87505e54d0a664fd2d3fc4ac7e271b293a404b2686cdbc9d5ebc1377bb2f64c8d120e7ab89315e1506d93421d1637aeb5de473e6f2f148c46fe5d00a169f8a813319c9728f7509ec5ae6c7febc458d9cb66956be8b17840f6df882708aa7384d48e702ddf556245d64d5ba3c9ed18bf8d933b368bb0781207e7863fae553f8734a45ebdcfbbc026241a4c4152173a55e7f3316c261a481d92b1929deb3b30480640810f4ef5c1e7c5e6e4fcac9d8df3d3d08c34352bd282656e648c2ae91a3bf3b18799eb1c12c4acc58d53e7bd80ad7101586cd50b9ddbe33d9a017d9a1d10d3a181e718938908b83b4103895a9cb628394f9e52a3dfcb05788ca9b5c750ce4ccf98dfbd398bfcae2e42308fb615270fcfa5923772c9e652757db9816cab025935ed6419e3b23a5adadfa89ebce816b79372815d4faf199bbf906fc0aa90d3795f2e0a4b885412eee6ace7bb49bf13a19ca8bdcc9285f0685ba03a01c749384ef126cf7c60fd21050d8f92b8cefbd929108c99ecae92cbabbe4bfedc12eb44d0bf58e0acc114682dc6ba2e1808f825161e7e6a257084021087bb97b497387c2b42de3bcf443a7ad28010a7588edc1a1f532501b1d80a9679453bb66f7da3155ddb4be39057f26287721ad98a9ad11f392b1b6f169a1379b684086a623adfe6d132d14f165db34493df0f6611af46b78e99236b7e1a10d8fb84051a5d03f641e91485a92502aca35961a484f3259f3c9fd7eb8878624a02ca21b91545702cb198f5b565870a6c821d57786373d6f90e3100b4bb4cfb5e8fcfe89651c38519f5f22cce9a5c38a551a2f30453e096b5328e02a742a0b54c7afb3651b64911c3ab85468114801b5295ca2490460822cac09bbb49539394edc1df010cd67ec87db89ac41fc75fb0bdff4a31651fdfbc9e9f054394b91a2928e35725e0cba0ad7433208b954f287d45614262c4287a096091e9f97f2fdfeba836780275166a6692ea16eb164ead54055f309f776a72664408167a3a3eb27737954b91824ef790753dbb85e96edf48410e3608ae63fd80e63cad2efc8adcab67cf543eb3ebf86803433c53f3d9e834a8d556fd4a07f0e301760181ba6fc47eac0544048807a0d1971fdecd031e8570baa3dc14593aaa4de96553c7d9f8803fb748dc2c0fad7c644a0a239a17c569f14220deca827842c25131d5b27ca434f4b6f50a8a8fdd2f33fd9958be0d97dec3f0bd9e9db773c32fcc6f64cce5427f921ebdf1d1cbb15963f264381a3f493ae7960598c1ac789b48bd62099a3bbb63ea9af095e876b4ed9fa67f2953517d7ad7f6b53bebfde42100d55937ce4c2b22ce24f9d3cee68bd6dfa54d925c5442cea019b4b7567f1ac10e9cac2228285a11048a9d87befe29776d940cb04a2256de7eaac1c82f788f8954387b8a348615f096d158947da1909c8252795c85bec37b7e58e84b279469cc6106e37abeaa94f2f64479cbc96e3b5c7cdd03e2334a2154f679a3f30253532ebd06469c7b151d84b47d3daa2f79b6a19b7fafbe73aa47597cbd56e106e6d8082c99eae4a17a328fa73b07c34ee9d964945a8f283b28eb23c1e778589233ab8baca0fe19dcb2c2c9aa05d0d03f566c9caf37dfe7a168b690bf9c23c976da34d5673f3c52d1a9ed195cb14d4cf4c916c6fa12e18a7b866829f11ba716f46d2e879f922ac311ba985ed281a2d80cd153389d9744017b4c81af9e3705521f5e2844bab549f6d7de53bf00474896e66039d16095c00ef83c426692c05f41fc0acf2748b3bd36a0981f066198abce5317aebff3a1094378166bb5c4934e1c21210e55ffc3cecb4fe4b2b83975e211f818d060cefb3f31a1af590510f4ae700418acd665c199f4b4437a6a5e52910540678497c32fb9154c0c4cc8355d56eb0ca3aed2234429e37619561827f5544cad34f6ae846ecd213204e73edc71fd98db44c6e2f4cf3dda3471ac19ea06104536713aab9273da2d13487be46f920f63be7e39d626c2029d60127ae3e5d30dac3723d805a954f6db40cedf9cf6eff7ae03139a86bde31cdeee591a53655b069d24061e8007ab44c86a42e951ea9e5abbd41547956d6268c497753cd9257c8632f8ee6c64863627c5fef48439b142ed4c0f7e9f0a14a6c16efd29a096902d5b74538663e7465af2b6f0ae5c3465f6b4a7c5fb1e7d69917961ee9faa18faf2d0779fb636d66d1cadfff3948505b1a7b9d389cd1476c29040a69b7b62f6cb91651e5c2c94945839e793be68f39efba72e77c51fcd18b5afe2fd8be8637e5360020c763205cba510cd37d713c05701db40b372fc428ccc41139b31b11d066a21f22250da32227bba9120a18df75baf0fd081119232e4763b3ad6d176a2ea0992ee212f194aa53e014f6d182a2375b850b656de2229a12e2803b7de8d7facccda84c5a50</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 这里需要密码.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+    </div>
+
+    
+    
+    
+      
+
+        <div class="reward-container">
+  <div>觉得文章对您有帮助请我喝杯奶茶吧😉</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    <i class="fa fa-qrcode fa-2x" style="line-height:35px;"></i>
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wc.png" alt="李鹏程 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>李鹏程
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://benettlee.github.io/2021/05/16/ZFIfeBC5hJJfCyuj/" title="搭建本地blast网页--sequenceserver">https://benettlee.github.io/2021/05/16/ZFIfeBC5hJJfCyuj/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener external nofollow noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/blast/" rel="tag"><i class="fa fa-tag"></i> blast</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/16/3zC67JfjKym5YsgM/" rel="prev" title="搭建私有云盘nextcloud">
+      <i class="fa fa-chevron-left"></i> 搭建私有云盘nextcloud
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/16/8g7OaikvGX1gFoeO/" rel="next" title="TDengine安装及简单使用">
+      TDengine安装及简单使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="李鹏程"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">李鹏程</p>
+  <div class="site-description" itemprop="description">一定要做最适合自己的事情，不要迎合别人的口味而去做一件不属于自我的“难事”。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/benettlee/benettlee.github.io" title="Github → https:&#x2F;&#x2F;github.com&#x2F;benettlee&#x2F;benettlee.github.io" rel="noopener external nofollow noreferrer" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:lipengcheng_wyyx@163.com" title="E-Mail → mailto:lipengcheng_wyyx@163.com" rel="noopener external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/images/wechat_channel.jpg" title="WeChat → &#x2F;images&#x2F;wechat_channel.jpg"><i class="fab fa-weixin fa-fw"></i>WeChat</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+
+
+    <div class="links-of-blogroll motion-element links-of-blogroll-block">
+      <div class="links-of-blogroll-title">
+        <!-- modify icon to fire by szw -->
+        <i class="fa fa-history fa-" aria-hidden="true"></i>
+        近期文章
+      </div>
+      <ul class="links-of-blogroll-list">
+        
+        
+          <li>
+            <a href="/2021/05/18/w9y0uyWUsWhTiyCT/" title="利用AnnotationForge得到org.db" target="_blank">利用AnnotationForge得到org.db</a>
+          </li>
+        
+          <li>
+            <a href="/2021/05/16/isKeOCLZQkvC898Z/" title="R语言数据处理基础" target="_blank">R语言数据处理基础</a>
+          </li>
+        
+          <li>
+            <a href="/2021/05/16/8g7OaikvGX1gFoeO/" title="TDengine安装及简单使用" target="_blank">TDengine安装及简单使用</a>
+          </li>
+        
+          <li>
+            <a href="/2021/05/16/ZFIfeBC5hJJfCyuj/" title="搭建本地blast网页--sequenceserver" target="_blank">搭建本地blast网页--sequenceserver</a>
+          </li>
+        
+          <li>
+            <a href="/2021/05/16/3zC67JfjKym5YsgM/" title="搭建私有云盘nextcloud" target="_blank">搭建私有云盘nextcloud</a>
+          </li>
+        
+      </ul>
+    </div>
+
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李鹏程</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">127k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:56</span>
+</div><div class="translate-style">
+繁/简：<a id="translateLink" href="javascript:translatePage();" rel="external nofollow noreferrer">繁体
+</a>
+</div>
+<script type="text/javascript" src="/js/tw_cn.js"></script>
+<script type="text/javascript">
+var defaultEncoding = 2; //网站编写字体是否繁体，1-繁体，2-简体
+var translateDelay = 0; //延迟时间,若不在前, 要设定延迟翻译时间, 如100表示100ms,默认为0
+var cookieDomain = "https://tding.top/"; //Cookie地址, 一定要设定, 通常为你的网址
+var msgToTraditionalChinese = "繁体"; //此处可以更改为你想要显示的文字
+var msgToSimplifiedChinese = "简体"; //同上，但两处均不建议更改
+var translateButtonId = "translateLink"; //默认互换id
+translateInitilization();
+</script>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://benettlee.github.io/2021/05/16/ZFIfeBC5hJJfCyuj/',]
+      });
+      });
+  </script>
+
+</body>
+</html>
