@@ -313,7 +313,16 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-05-30 11:54:47 / 修改时间：11:59:10" itemprop="dateCreated datePublished" datetime="2021-05-30T11:54:47Z">2021-05-30</time>
+              <time title="创建时间：2021-05-30 11:54:47 / 修改时间：12:15:39" itemprop="dateCreated datePublished" datetime="2021-05-30T11:54:47Z">2021-05-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/bioinfo/" itemprop="url" rel="index"><span itemprop="name">bioinfo</span></a>
+                </span>
             </span>
 
           <br>
@@ -322,14 +331,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>15k</span>
+              <span>75k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>14 分钟</span>
+              <span>1:08</span>
             </span>
 
         </div>
@@ -341,236 +350,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="linux-常用命令"><a href="#linux-常用命令" class="headerlink" title="linux 常用命令"></a>linux 常用命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1、将windows下编辑文件转换为linux文件，防止发生错误</span></span><br><span class="line">dos2unix merged.txt</span><br><span class="line">dos2unix: 正在转换文件 merged.txt 为Unix格式...</span><br><span class="line"><span class="comment"># 2、查看linux当前用户</span></span><br><span class="line">w</span><br><span class="line"><span class="comment"># 3、查看文件夹下的文件数目</span></span><br><span class="line">ls -l |grep <span class="string">&quot;^-&quot;</span>|wc -l</span><br><span class="line">或</span><br><span class="line">find ./folder_name -<span class="built_in">type</span> f | wc -l     注：folder_name 指的是：当前目录下的你要查询的文件夹名</span><br></pre></td></tr></table></figure>
-
-<h2 id="RNAseq简单分析流程"><a href="#RNAseq简单分析流程" class="headerlink" title="RNAseq简单分析流程"></a>RNAseq简单分析流程</h2><h3 id="install-softwares"><a href="#install-softwares" class="headerlink" title="install softwares"></a>install softwares</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">conda install -c bioconda -n RNAseq samtools </span><br><span class="line">conda install -c bioconda -n RNAseq multiqc</span><br><span class="line">conda install -c bioconda -n RNAseq hisat2</span><br><span class="line">conda install -c bioconda -n RNAseq cufflinks</span><br><span class="line">conda install -c bioconda -n RNAseq taco</span><br><span class="line">conda install -c bioconda -n RNAseq HTSeq </span><br><span class="line">conda install -c bioconda -n RNAseq subread <span class="comment">##使用featureCounts</span></span><br><span class="line">conda install -n RNAseq fastp</span><br><span class="line">conda install -c bioconda -n RNAseq gffcompare</span><br><span class="line">conda install -c bioconda -n RNAseq rmats rmats2sashimiplot</span><br></pre></td></tr></table></figure>
-
-<h3 id="raw-data的过滤和清除不可信数据（clean-reads）"><a href="#raw-data的过滤和清除不可信数据（clean-reads）" class="headerlink" title="raw data的过滤和清除不可信数据（clean reads）"></a>raw data的过滤和清除不可信数据（clean reads）</h3><h3 id="用fastp对转录组数据做QC"><a href="#用fastp对转录组数据做QC" class="headerlink" title="用fastp对转录组数据做QC"></a>用fastp对转录组数据做QC</h3><ul>
-<li>对数据自动进行全方位质控，生成人性化的报告；</li>
-<li>过滤功能(低质量,太短,太多N……)；</li>
-<li>对每一个序列的头部或尾部，计算滑动窗内的质量均值，并将均值较低的子序列进行切除(类似 Trimmomatic 的做法,但是快非常多)；</li>
-<li>全局剪裁 (在头/尾部，不影响去重)，对于 Illumina 下机数据往往最后一到两个 cycle 需要这样处理；</li>
-<li>去除接头污染。厉害的是，你不用输入接头序列，因为算法会自动识别接头序列并进行剪裁；</li>
-<li>对于双端测序(PE)的数据，软件会自动查找每一对read的重叠区域，并对该重叠区域中不匹配的碱基对进行校正；</li>
-<li>去除尾部的 polyG。对于NextSeq/NovaSeq 的测序数据，因为是两色法发光，polyG 是常有的事，所以该特性对该两类测序平台默认打开；</li>
-<li>对于PE数据中的overlap区间中不一致的碱基对，依据质量值进行校正；</li>
-<li>可以对带分子标签(UMI)的数据进行预处理，不管UMI在插入片段还是在index 上，都可以轻松处理；</li>
-<li>可以将输出进行分拆，而且支持两种模式，分别是指定分拆的个数，或者分拆后每个文件的行数。</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##单端测序</span></span><br><span class="line">fastp -i in.fq -o out.fq</span><br><span class="line"><span class="comment">## 双端测序</span></span><br><span class="line">fastp -w 5 -h *.html -j *.json -i in.R1.fq -o out.R1.fq -I in.R2.fq -O out.R2.fq</span><br></pre></td></tr></table></figure>
-
-<h3 id="Step1：建立索引，把reads-mapping到基因组上"><a href="#Step1：建立索引，把reads-mapping到基因组上" class="headerlink" title="Step1：建立索引，把reads mapping到基因组上"></a>Step1：建立索引，把reads mapping到基因组上</h3><ul>
-<li><p><strong>建索引</strong></p>
-<blockquote>
-<p><strong>1、将gff3转换为gtf</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gffread -T *.gff3 -o *.gtf</span><br><span class="line"><span class="comment">##for example</span></span><br><span class="line">gffread -T /mnt/sdb/data/bioinfo/genome/SolTub_3.0/Solanum_tuberosum.SolTub_3.0.45.gff3 -o SolTub_3.0.gtf</span><br></pre></td></tr></table></figure>
-
-<p><strong>2、提取 .exon 文件</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">extract_exons.py *.gtf &gt;*.exon</span><br><span class="line"><span class="comment">##for example</span></span><br><span class="line">python ~/soft/anaconda3/envs/RNAseq/bin/hisat2_extract_exons.py SolTub_3.0.gtf &gt; SolTub_3.0.exon</span><br></pre></td></tr></table></figure>
-
-<p><strong>3、提取 .ss 文件</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">extract_splice_sites.py *.gtf &gt;*.ss</span><br><span class="line"><span class="comment">##for example</span></span><br><span class="line">python ~/soft/anaconda3/envs/RNAseq/bin/hisat2_extract_splice_sites.py SolTub_3.0.gtf &gt; SolTub_3.0.ss</span><br></pre></td></tr></table></figure>
-
-<p><strong>4、用以上文件建立索引</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hisat2-build -p 20 --ss *.ss --exon *.exon *.fa indexname</span><br><span class="line"><span class="comment">###fa文件为基因组文件</span></span><br><span class="line"><span class="comment">##for example</span></span><br><span class="line">hisat2-build -p 30 --ss SolTub_3.0.ss --exon SolTub_3.0.exon /mnt/sdb/data/bioinfo/genome/SolTub_3.0/SolTub_3.0.dna.toplevel.fa ../index/SolTub</span><br></pre></td></tr></table></figure></blockquote>
-</li>
-<li><p><strong>将reads mapping到基因组上</strong></p>
-<blockquote>
-<p><strong>1、hisat2</strong><br><strong>hisat非链特异性</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hisat2 -x [index] --dta-cufflinks  -p 4  -1 *.r1.fq.gz -2 *.r2.fq.gz -S output.sam</span><br></pre></td></tr></table></figure>
-
-<p><strong>链特异性</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hisat2 -x [index] --dta-cufflinks --rna-strandness RF -p 4  -1 *.r1.fq.gz -2 *.r2.fq.gz -S output.sam  | tee -a *.<span class="built_in">log</span></span><br><span class="line"><span class="keyword">for</span> example</span><br><span class="line">hisat2 -x ../index/SolTub --dta-cufflinks --rna-strandness RF -p 20 -1 ../raw/AtC_0h_rep1_R1.fq.gz -2 ../raw/AtC_0h_rep1_R2.fq.gz -S AtC_0h_rep1.sam | tee log.AtC_0h_rep1.sam</span><br></pre></td></tr></table></figure>
-
-<p><strong>2、查看比对率</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##方法1：查看log</span></span><br><span class="line"><span class="comment">##方法2：用 samtools 的 flagstat 进行统计，也能得到比对率</span></span><br><span class="line">samtools flagstat RNA.bam</span><br></pre></td></tr></table></figure>
-
-<p><strong>3、过滤掉mapping reads 参数Q30， 有些基因序列相似度太高，mapping reads就不太准，所以过滤掉这些序列相似度过高的reads。</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">samtools view</span><br><span class="line">samtools view -@ 20 -Sb -q 30 <span class="variable">$sam</span> -o <span class="variable">$bam</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>4、如果是<code>paired-end</code>数据必须按照reads名称排序</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">samtools sort -@ 20 <span class="variable">$bam</span> -o <span class="variable">$sorted</span>.bam</span><br></pre></td></tr></table></figure></blockquote>
-</li>
-</ul>
-<h3 id="Step2：转录本组装与拼接（cufflinks或者StringTie）"><a href="#Step2：转录本组装与拼接（cufflinks或者StringTie）" class="headerlink" title="Step2：转录本组装与拼接（cufflinks或者StringTie）"></a>Step2：转录本组装与拼接（cufflinks或者StringTie）</h3><ul>
-<li><strong>cufflinks</strong></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#链特异性</span></span><br><span class="line">cufflinks  -p 4 --library-type fr-firststrand -g reference.gff -o outdir  sorted.bam </span><br><span class="line"><span class="comment">##for example</span></span><br><span class="line">cufflinks  -p 30 --library-type fr-firststrand -g /mnt/sdb/data/bioinfo/genome/SolTub_3.0/SolTub_3.0.45.gff3 -o ../cufflinks/QsC_0h_rep1 QsC_0h_rep1.sorted.bam</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>StringTie</strong><br><strong>StringTie 使用说明:</strong></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">stringtie &lt;input.bam ..&gt; [-G &lt;guide_gff&gt;] [-l &lt;label&gt;] [-o &lt;out_gtf&gt;] [-p &lt;cpus&gt;]</span><br><span class="line">  [-v] [-a &lt;min_anchor_len&gt;] [-m &lt;min_tlen&gt;] [-j &lt;min_anchor_cov&gt;] [-f &lt;min_iso&gt;]</span><br><span class="line">  [-C &lt;coverage_file_name&gt;] [-c &lt;min_bundle_cov&gt;] [-g &lt;bdist&gt;] [-u]</span><br><span class="line">  [-e] [-x &lt;seqid,..&gt;] [-A &lt;gene_abund.out&gt;] [-h] &#123;-B | -b &lt;dir_path&gt;&#125;</span><br><span class="line"><span class="comment">#for example</span></span><br><span class="line"><span class="comment">### 链特异性文库</span></span><br><span class="line">stringtie --rf -p 8 -G chrX.gtf sample.sort.bam -o sample.gtf</span><br></pre></td></tr></table></figure>
-
-<p><strong>选项:</strong></p>
-<blockquote>
-<p><strong>–version : 输出软件的版本信息<br>-G 参考序列的基因注释文件 (GTF/GFF3)<br>-l 输出转录本的名称前缀 (default: STRG)<br>-f 最少转录本的比例 (default: 0.1)<br>-m 组装转录本的最小长度 (default: 200)<br>-o 组装转录本的GTF注释文件 (default: stdout)<br>-a 连接位点锚定序列的最小长度 (default: 10)<br>-j 连接位点的最小覆盖度 (default: 1)<br>-t 基于覆盖度对预测的转录本进行修正 (default: coverage trimming is enabled)<br>-c 组装转录本的reads最小覆盖度(default: 2.5)<br>-v 输出log 信息<br>-g 比对上的reads 间距大于阀值则新城一个新的转录束 (default: 50)<br>-C 输出参考转录本中被reads 覆盖到的转录本<br>-M 转录束允许多比对reads覆盖的最大占比 (default:0.95)<br>-p 线程（CPU)数 (default: 1)<br>-A 基因丰都输出文件<br>-B 在输出的GFT同目录下输出Ballgown table 文件<br>-b 在 &lt;dir_path&gt; 目录下输出Ballgown table 文件<br>-e 只对参考转录本进行丰都评估 (requires -G)<br>-x 不在参考序列区域组装任何的新转录本<br>-u 多比对校正 (default: correction enabled)<br>-h 输出软件的帮助信息</strong></p>
-</blockquote>
-<p><strong>转录本合并模式使用说明:</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">stringtie --merge [Options] &#123; gtf_list | strg1.gtf ...&#125;</span><br><span class="line"><span class="comment">## for example</span></span><br><span class="line">stringtie --merge -p 8 -G chrX.gtf -o stringtie_merge.gtf mergelist.txt</span><br></pre></td></tr></table></figure>
-
-<p><strong>选项</strong></p>
-<blockquote>
-<p><strong>-G &lt;guide_gff&gt;   参考转录本的注释信息 (GTF/GFF3)<br>-o &lt;out_gtf&gt;     合并转录本的GTF输出文件 (default: stdout)<br>-m &lt;min_len&gt;     合并转录本的最小长度(default: 50)<br>-c &lt;min_cov&gt;     合并转录本的最低覆盖度(default: 0)<br>-F &lt;min_fpkm&gt;    合并转录本的最小FPKM值(default: 1.0)<br>-T &lt;min_tpm&gt;     合并转录本的最小TPM值(default: 1.0)<br>-f &lt;min_iso&gt;     isoform 最小比例(default: 0.01)<br>-g &lt;gap_len&gt;     转录本见GAP长度小于阀值则合并两转录本 (default: 250)<br>-i               允许合并转录本中有内含子保留; by default<br>-l <label>       输出的转录本名称前缀 (default: MSTRG)</strong></p>
-</blockquote>
-<h3 id="Step3：计算counts数"><a href="#Step3：计算counts数" class="headerlink" title="Step3：计算counts数"></a>Step3：计算counts数</h3><p><strong>1、经过cufflinks之后每个样都会产生一个文件夹，每个文件夹里都有一个transcript.gtf, 需要在运行下一步之前将所有的transcript.gtf放到一个文件里gtflist</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ls dir/*/transcripts.gtf &gt;gtflist</span><br><span class="line"><span class="comment">## for example</span></span><br><span class="line">ls cufflinks/*/transcripts.gtf &gt;gtflist</span><br></pre></td></tr></table></figure>
-
-<p><strong>2、cuffmerge代替taco</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cuffmerge -p 20  -s <span class="variable">$genome</span> -g <span class="variable">$gtf</span> gtflist &gt;log.cuffmerge.txt</span><br><span class="line"><span class="comment">##for example</span></span><br><span class="line">cuffmerge -p 20  -s /mnt/sdb/data/bioinfo/genome/SolTub_3.0/SolTub_3.0.dna.toplevel.fa -g ../process/SolTub_3.0.gtf gtflist &gt;AQ0cuffmerge.log</span><br></pre></td></tr></table></figure>
-
-<p><strong>3 计算count数</strong></p>
-<ul>
-<li><strong>3.1 htseq-count计算count数</strong></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##链特异性</span></span><br><span class="line">htseq-count -f bam -q  -s reverse sorted.bam  assembly.gtf  &gt;output.txt 2&gt;&amp;1  &amp;</span><br><span class="line"><span class="comment">### for example </span></span><br><span class="line">htseq-count -f bam -q  -s reverse ../sam/AtC_0h_rep1.sorted.bam  merged.gtf  &gt;AtC_0h_rep1_count.txt 2&gt;&amp;1  &amp;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>3.2 新拼装转录本与原基因组注释转录本比较 (可用来筛选新转录本)</strong></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -R: 只考虑与拼装的转录本有重叠的注释转录本</span></span><br><span class="line"><span class="comment"># -r: reference gtf</span></span><br><span class="line"><span class="comment"># -o: 输出前缀</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ~/transcriptome/data</span><br><span class="line">gffcompare -R -r genome/GRCh38.gtf -o assembeCompare2Ref ehbio_trans.gtf</span><br><span class="line"><span class="comment"># 会输出一个assembeCompare2Ref.annotated.gtf，用于后续的定量</span></span><br><span class="line"></span><br><span class="line">统计不同种类转录本的数目</span><br><span class="line">cut -f 3 assembeCompare2Ref.ehbio_trans.gtf.tmap | tail -n +2 | sort | uniq -c</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>3.3 featureCounts计算count数</strong></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#链特异性</span></span><br><span class="line">featureCounts -T 5 -s 2 -t exon -g gene_id -a annotation.gtf -o counts.txt .bam</span><br><span class="line"><span class="comment">##for example</span></span><br><span class="line">featureCounts -T 20 -s 2 -p -t exon -g gene_id -a merged.gtf -o AtC_0h_rep_count.txt ../sam/AtC_0h_rep1.sorted.bam</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##每个基因上的count数，则只需要提取出第1列和第7列的信息</span></span><br><span class="line">cut -f 1,7 *featureCounts.txt |grep -v <span class="string">&#x27;^#&#x27;</span> &gt;feacturCounts.txt</span><br></pre></td></tr></table></figure>
-
-<h3 id="差异表达分析"><a href="#差异表达分析" class="headerlink" title="差异表达分析"></a>差异表达分析</h3><p><a href="!%5B%5D(https://gitee.com/benettlee/images/raw/master/img/DESeq2.zip)">DEseq2分析脚本</a></p>
-<h3 id="rMATS差异可变剪切分析"><a href="#rMATS差异可变剪切分析" class="headerlink" title="rMATS差异可变剪切分析"></a><strong>rMATS差异可变剪切分析</strong></h3><p>rMATS是一款对RNA-Seq数据进行差异可变剪切分析的软件。其通过rMATS统计模型对不同样本（有生物学重复的）进行可变剪切事件的表达定量，然后以likelihood-ratio test计算P value来表示两组样品在IncLevel（Inclusion Level）水平上的差异(从公式上来看，IncLevel跟PSI的定义也是类似的)，lncLevel并利用Benjamini Hochberg算法对p value进行校正得FDR值。rMATS可识别的可变剪切事件有5种，分别是skipped exon (SE)外显子跳跃，alternative 5’ splice site (A5SS)第一个外显子可变剪切，alternative 3’ splice site (A3SS)最后一个外显子可变剪切，mutually exclusive exons (MXE)外显子选择性跳跃和 retained intron (RI)内含子滞留，展现形式如下图（来自官网<a target="_blank" rel="noopener external nofollow noreferrer" href="http://rnaseq-mats.sourceforge.net/index.html">Multivariate Analysis of Transcript Splicing (MATS)</a>）<br><img src="https://gitee.com/benettlee/images/raw/master/img/f31d26f1.jpg" alt="rMATS_splicing.jpg"></p>
-<ul>
-<li><strong>软件下载及安装</strong><br>rMATS最近刚现在出了rMATS 4.0.1版，相比之间的rMATS 3.2.5版，其用C，Python，Cython重写了该软件，运算速度提升了100倍，并且可支持多线程执行（明显感觉到计算速度的提升），并且新版的安装也简便好多了。PS.老版的rMATS我那时都是用bioconda安装的，不然太折腾了。。</li>
-</ul>
-<p>进官网或者下述网站进行下载<br><a target="_blank" rel="noopener external nofollow noreferrer" href="https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.4.0.1.tgz/download">Download RNASeq-MATS from SourceForge.net</a><br>然后按照官网说明安装一些库文件以及python库（以ubuntu为例）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install numpy</span><br><span class="line">sudo apt-get install libblas-dev liblapack-dev</span><br><span class="line">sudo apt-get install gfortran</span><br></pre></td></tr></table></figure>
-
-<p>如果python的numpy装的有问题，可以使用bioconda来装下旧版的rMATS，其会顺便把numpy也装好，然后将其放置在环境变量中就行了（一般也不用这样）</p>
-<p>如果运行时报错：error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory，则说明缺少libgsl.so.0库文件，按照下述安装下就好</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libgsl0-dev</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>软件的使用</strong><br>软件使用也很简单，rMATS支持两种格式文件的输入。第一种是fastq格式，那么在安装的时候还需要安装STAR比对软件以及提供比对的索引文件（STAR的索引文件异常的大），所以rMATS其实是建议使用第二种方式；第二种是bam格式，rMATS支持其他比对软件比对后的结果bam文件作为输入，比如tophat等（那么hisat2也没啥问题，我试过），这样也能减少rMATS的运行时间。</li>
-</ul>
-<p>新版rMATS下载解压后，你会发现有两个rmats.py执行脚本，这是由于rMATS v4.0.1 (turbo) was built with two different settings of Python interpreter，所以我们需要先测试下自己的系统支持那种，进入python，输入下述命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span> sys.maxunicode</span><br></pre></td></tr></table></figure>
-
-<p>如果出现1114111则说明需要使用<code>rMATS-turbo-Linux-UCS4</code>文件夹下<code>rmats.py</code>；如果出现<code>65535</code>则说明使用<code>rMATS-turbo-Linux-UCS2</code>文件夹下<code>rmats.py</code></p>
-<p>rMATS的参数设置不多，我一般使用以下几个，其他具体可参考官网</p>
-<blockquote>
-<p>–b1 b1.txt 输入sample1的txt格式的文件，文件内以逗号分隔重复样本的bam文件名<br>–b2 b2.txt 输入sample2的txt格式的文件，文件内以逗号分隔重复样本的bam文件名<br>-t readType 双端测序则readType为paired，单端测序则为single<br>–readLength 测序reads的长度<br>–gtf gtfFile 需要输入的gtf文件<br>–od outDir 所有输出文件的路径（文件夹）<br>–nthread 设置线程数<br>–cstat The cutoff splicing difference. The cutoff used in the null hypothesis test for differential splicing（这个我一直不太理解是怎么卡的阈值，是在算法识别一些新的可变剪切的时候的差异性吗）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python rMATS-turbo-Linux-UCS4/rmats.py --b1 b1.txt --b2 b2.txt --gtf Homo_sapiens.Ensembl.GRCh37.72.gtf --od AS -t paired --readLength 151 --cstat 0.0001 --nthread 10</span><br></pre></td></tr></table></figure>
-</blockquote>
-<ul>
-<li><strong>结果文件</strong><br>rMATS的结果文件是以各个可变剪切事件的分布的，主要由AS_Event.MATS.JC.txt，AS_Event.MATS.JCEC.txt，fromGTF.AS_Event.txt，JC.raw.input.AS_Event.txt，JCEC.raw.input.AS_Event.txt这几类；其中JC和JCEC的区别在于前者考虑跨越剪切位点的reads，而后者不仅考虑前者的reads还考虑到只比对到第一张图中条纹的区域（也就是说没有跨越剪切位点的reads），但是我们一般使用JC的结果就够了（如果只是单纯的比较两组样品间可变剪切的差异的话）。</li>
-</ul>
-<p>这几类文件中比较重要的要数S_Event.MATS.JC.txt，因为其他文件的信息差不多最终都整合在这个文件里面，以SE.MATS.JC.txt为例：</p>
-<p>1-5列看列名就能懂其意思的，分别ID，GeneID，geneSymbol，chr，strand</p>
-<p>6-11列分别为外显子的位置信息，分别为exonStart_0base，exonEnd，upstreamES，upstreamEE，downstreamES，downstreamEE；网上有张图能很好的解释其含义，如下所示；其他可变剪切文件的这几列有点略微不同，但都可以类似的理解</p>
-<p><img src="https://gitee.com/benettlee/images/raw/master/img/385879e1.png" alt="skipped_exon.png"></p>
-<p>12列又为ID，不知道为啥重复再来一次，可能为了布局美观吧。。。</p>
-<p>13-16列展示两组样品在inclusion junction（IJC）和skipping junction counts（SJC）下的count数，重复样本的结果以逗号分隔；列名分别为IJC_SAMPLE_1，SJC_SAMPLE_1，IJC_SAMPLE_2，SJC_SAMPLE_2，可以从下图来理解下</p>
-<p><img src="https://gitee.com/benettlee/images/raw/master/img/8a444a31.png" alt="SE.png"></p>
-<p>下面几列信息rMATS认为是极为重要的信息：</p>
-<ul>
-<li>lncFormLen ：length of inclusion form, used for normalization</li>
-<li>SkipFormLen : length of skipping form, used for normalization</li>
-<li>P-Value : Significance of splicing difference between two sample groups（两组样品可变剪切的统计学显著差异指标）</li>
-<li>FDR ： False Discovery Rate calculated from p-value（对p-value的FDR校正）</li>
-<li>lncLevel1 ： inclusion level for SAMPLE_1 replicates (comma separated) calculated from normalized counts</li>
-<li>IncLevel2 : inclusion level for SAMPLE_2 replicates (comma separated) calculated from normalized counts</li>
-<li>IncLevelDifference ： average(IncLevel1) - average(IncLevel2)<br>lncFormLen和SkipFormLen分别是inclusion form和skipping form的有效长度值，虽然有计算公式但是还是要根据reads跨越时的具体情况来定的，具体解释可见<a target="_blank" rel="noopener external nofollow noreferrer" href="https://groups.google.com/forum/#!topic/rmats-user-group/d7rzUBKXF1U">Google 网上论坛</a>(需翻墙。。。才能看哦)</li>
-</ul>
-<p>lncLevel1和IncLevel2分别为sample1和sample2的inclusion level（粗略可理解为PSI），从公式上看比较好理解</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ψ = (I/LI) / (I/LI + S/LS)</span><br></pre></td></tr></table></figure>
-
-<p><code>ψ = Inclusion Level（sample1），I = IJC_SAMPLE_1，S = SJC_SAMPLE_1，LI = lncFormLen，LS = SkipFormLen</code></p>
-<p>从公式上理解为lncLevel是在最终的成熟mRNA中，这个respective exon（SE事件中则是对应那个被跳跃的exon）出现的平均频率是多少，或者说所占的比例？也可以认为是read counts(标准化后的)在可变剪切的事件中的各自exon上所占的比例？简单的说就是lncLevel越小说明出现外显子的跳跃的比例越高（这个是以SE文件为例的）？？？可能我还理解的不是很准确。。。。</p>
-<p>最后还有一个软件能绘制可变剪切的图片的软件rmats2sashimiplot</p>
-<h3 id="Getting-error-in-running-rMATS"><a href="#Getting-error-in-running-rMATS" class="headerlink" title="Getting error in running rMATS"></a>Getting error in running rMATS</h3><p>Hi everyone,</p>
-<p>I’m trying to run rMATS to get alternative splicing but encountered some errors.</p>
-<p>Errors found:</p>
-<pre><code>==========
-Done processing each gene from dictionary to compile AS events
-Found 14962 exon skipping events
-Found 1100 exon MX events
-Found 28836 alt SS events
-There are 16303 alt 3 SS events and 12533 alt 5 SS events.
-Found 25486 RI events
-==========
-
-Running the statistical part.
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JC_SE/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JC_SE/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JCEC_SE/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JCEC_SE/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JC_MXE/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JC_MXE/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JCEC_MXE/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JCEC_MXE/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JC_A3SS/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JC_A3SS/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JCEC_A3SS/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JCEC_A3SS/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JC_A5SS/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JC_A5SS/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JCEC_A5SS/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JCEC_A5SS/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JC_RI/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JC_RI/rMATS_result_FDR.txt: No such file or directory
-/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe: error while loading shared libraries: libgsl.so.0: cannot open shared object file: No such file or directory
-Traceback (most recent call last):
-  File &quot;/home/ABZ/rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_P/FDR.py&quot;, line 45, in &lt;module&gt;
-    ifile=open(sys.argv[1]);title=ifile.readline();
-IOError: [Errno 2] No such file or directory: &#39;/tmp/tmpQ7Q7J5/JCEC_RI/rMATS_result_P-V.txt&#39;
-paste: /tmp/tmpQ7Q7J5/JCEC_RI/rMATS_result_FDR.txt: No such file or directory
-The statistical part is done.
-</code></pre>
-<p>The solution is:</p>
-<p>1, install libgsl libraries</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libgsl-dev</span><br></pre></td></tr></table></figure>
-
-<p>2, create a link between the 16.04 library file with that expected by rMATS</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ln /usr/lib/x86_64-linux-gnu/libgsl.so.19 /usr/lib/x86_64-linux-gnu/libgsl.so.0</span><br></pre></td></tr></table></figure>
-
-<p>3, run rMATS</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rMATS.4.0.2/rMATS-turbo-Linux-UCS4/rMATS_C/rMATSexe</span><br><span class="line">number of thread=1; input file=input.txt; output folder=.; cutoff=0.0001;</span><br><span class="line">Total Wallclock time taken 0 seconds 0 milliseconds</span><br><span class="line">Wallclock time per thread taken 0 seconds 0 milliseconds</span><br></pre></td></tr></table></figure>
+          这里有东西被加密了，需要输入密码查看哦。
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/30/N9AxXFYknJwvXM7D/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1720,12 +1508,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">614k</span>
+    <span title="站点总字数">674k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">9:18</span>
+    <span title="站点阅读时长">10:12</span>
 </div><div class="translate-style">
 繁/简：<a id="translateLink" href="javascript:translatePage();" rel="external nofollow noreferrer">繁体
 </a>
